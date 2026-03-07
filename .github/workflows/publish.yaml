@@ -12,6 +12,7 @@ permissions:
 env:
   DOTNET_VERSION: 9.0.x
   PLUGIN_NAME: ExtraAuthSettings
+  PROJECT_PATH: ExtraAuthSettings/ExtraAuthSettings.csproj
 
 jobs:
   publish:
@@ -61,7 +62,7 @@ jobs:
 
       - name: Publish
         run: >
-          dotnet publish ExtraAuthSettings.sln
+          dotnet publish ${{ env.PROJECT_PATH }}
           --configuration Release
           --output dist/publish
           /p:Version=${{ steps.version.outputs.value }}
@@ -128,7 +129,8 @@ jobs:
             --manifest manifest-worktree/manifest.json \
             --source-url "$source_url" \
             --checksum "$checksum" \
-            --timestamp "$timestamp"
+            --timestamp "$timestamp" \
+            --asset-base-url "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/v${{ steps.version.outputs.value }}/"
 
           (
             cd manifest-worktree

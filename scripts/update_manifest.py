@@ -4,6 +4,7 @@ import argparse
 import json
 import re
 from pathlib import Path
+from urllib.parse import urljoin
 
 
 def _fold_block(lines: list[str]) -> str:
@@ -90,6 +91,7 @@ def main() -> int:
     parser.add_argument("--source-url", required=True)
     parser.add_argument("--checksum", required=True)
     parser.add_argument("--timestamp", required=True)
+    parser.add_argument("--asset-base-url")
     args = parser.parse_args()
 
     metadata = parse_build_yaml(Path(args.build_yaml))
@@ -117,6 +119,15 @@ def main() -> int:
             "category": metadata["category"],
         }
     )
+
+    image_url = metadata.get("imageUrl")
+    if isinstance(image_url, str) and image_url:
+        if re.match(r"^https?://", image_url):
+            plugin["imageUrl"] = image_url
+        elif args.asset_base_url:
+            plugin["imageUrl"] = urljoin(args.asset_base_url.rstrip("/") + "/", image_url)
+        else:
+            plugin["imageUrl"] = image_url
 
     version_entry = {
         "version": metadata["version"],

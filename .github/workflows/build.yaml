@@ -14,6 +14,7 @@ permissions:
 env:
   DOTNET_VERSION: 9.0.x
   PLUGIN_NAME: ExtraAuthSettings
+  PROJECT_PATH: ExtraAuthSettings/ExtraAuthSettings.csproj
 
 jobs:
   build:
@@ -43,7 +44,7 @@ jobs:
 
       - name: Publish
         run: >
-          dotnet publish ExtraAuthSettings.sln
+          dotnet publish ${{ env.PROJECT_PATH }}
           --configuration Release
           --output artifacts/publish
           /p:Version=${{ steps.version.outputs.value }}

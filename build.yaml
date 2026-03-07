@@ -5,6 +5,7 @@ version: "1.0.0.0"
 targetAbi: "10.11.0.0"
 framework: "net9.0"
 overview: "A few extra settings for authentication/authorization of users."
+imageUrl: "style/icon.svg"
 description: >
   This plugin adds a few extra settings for authentication/authorization of users.
   It is not meant to be a full replacement for the built in authentication system,
