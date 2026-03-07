@@ -1,0 +1,145 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_VERSION: 9.0.x
+  PLUGIN_NAME: ExtraAuthSettings
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Resolve release version
+        id: version
+        shell: bash
+        run: |
+          build_yaml_version="$(sed -n 's/^version: \"\(.*\)\"$/\1/p' build.yaml)"
+          props_version="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' Directory.Build.props)"
+          version="${GITHUB_REF_TYPE:-branch}"
+
+          if [[ "$version" == "tag" ]]; then
+            version="${GITHUB_REF_NAME#v}"
+          else
+            version="$build_yaml_version"
+          fi
+
+          if [[ -z "$version" || -z "$build_yaml_version" || -z "$props_version" ]]; then
+            echo "Unable to determine release versions from repository files" >&2
+            exit 1
+          fi
+
+          if [[ "$version" != "$build_yaml_version" ]]; then
+            echo "Tag version '$version' does not match build.yaml version '$build_yaml_version'" >&2
+            exit 1
+          fi
+
+          if [[ "$version" != "$props_version" ]]; then
+            echo "Tag version '$version' does not match Directory.Build.props version '$props_version'" >&2
+            exit 1
+          fi
+
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Publish
+        run: >
+          dotnet publish ExtraAuthSettings.sln
+          --configuration Release
+          --output dist/publish
+          /p:Version=${{ steps.version.outputs.value }}
+          /p:AssemblyVersion=${{ steps.version.outputs.value }}
+          /p:FileVersion=${{ steps.version.outputs.value }}
+
+      - name: Package release assets
+        id: package
+        shell: bash
+        run: |
+          archive_name="${PLUGIN_NAME}_${{ steps.version.outputs.value }}.zip"
+          checksum_name="${archive_name}.md5"
+
+          mkdir -p dist/package/${PLUGIN_NAME}
+          cp dist/publish/* dist/package/${PLUGIN_NAME}/
+
+          (
+            cd dist/package
+            zip -r "../${archive_name}" "${PLUGIN_NAME}"
+          )
+
+          md5sum "dist/${archive_name}" > "dist/${checksum_name}"
+
+          echo "archive=dist/${archive_name}" >> "$GITHUB_OUTPUT"
+          echo "checksum=dist/${checksum_name}" >> "$GITHUB_OUTPUT"
+          echo "archive_name=${archive_name}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.value }}
+          name: ${{ env.PLUGIN_NAME }} v${{ steps.version.outputs.value }}
+          generate_release_notes: true
+          files: |
+            ${{ steps.package.outputs.archive }}
+            ${{ steps.package.outputs.checksum }}
+
+      - name: Update manifest branch
+        shell: bash
+        run: |
+          checksum="$(cut -d ' ' -f 1 < "${{ steps.package.outputs.checksum }}")"
+          timestamp="$(date -u '+%Y-%m-%d %H:%M:%S')"
+          source_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/v${{ steps.version.outputs.value }}/${{ steps.package.outputs.archive_name }}"
+
+          git fetch origin manifest || true
+
+          if git show-ref --verify --quiet refs/remotes/origin/manifest; then
+            git worktree add manifest-worktree origin/manifest
+            (
+              cd manifest-worktree
+              git switch -C manifest
+            )
+          else
+            git worktree add --detach manifest-worktree
+            (
+              cd manifest-worktree
+              git switch --orphan manifest
+              find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+            )
+          fi
+
+          python3 scripts/update_manifest.py \
+            --build-yaml build.yaml \
+            --manifest manifest-worktree/manifest.json \
+            --source-url "$source_url" \
+            --checksum "$checksum" \
+            --timestamp "$timestamp"
+
+          (
+            cd manifest-worktree
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            if [[ -z "$(git status --porcelain -- manifest.json)" ]]; then
+              exit 0
+            fi
+
+            git add manifest.json
+            git commit -m "Update manifest for v${{ steps.version.outputs.value }}"
+            git push origin manifest
+          )

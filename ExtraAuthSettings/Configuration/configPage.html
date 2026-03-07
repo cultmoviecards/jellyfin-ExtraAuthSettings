@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ExtraAuthSettings</title>
+</head>
+<body>
+    <div id="ExtraAuthSettingsConfigPage" data-role="page" class="page type-interior pluginConfigurationPage">
+        <div data-role="content">
+            <div class="content-primary">
+                <form id="ExtraAuthSettingsConfigForm">
+                    <div class="sectionTitleContainer">
+                        <h2 class="sectionTitle">User self-service restrictions</h2>
+                        <div class="fieldDescription">
+                            Disable self-service password or profile picture changes per Jellyfin user. Administrators remain allowed.
+                        </div>
+                    </div>
+                    <div id="userSettingsList"></div>
+                    <div>
+                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                            <span>Save</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var ExtraAuthSettingsConfig = {
+                pluginUniqueId: '0e1e569f-1060-4115-a35d-a9886e393725'
+            };
+
+            function getUsersUrl() {
+                return ApiClient.getUrl('Plugins/ExtraAuthSettings/Users');
+            }
+
+            function getSetting(config, userId) {
+                var settings = config.UserSettings || [];
+                return settings.find(function (entry) {
+                    return entry.UserId === userId;
+                }) || {
+                    UserId: userId,
+                    AllowPasswordChange: true,
+                    AllowProfileImageChange: true
+                };
+            }
+
+            function renderUsers(config, users) {
+                var container = document.querySelector('#userSettingsList');
+                container.innerHTML = '';
+
+                users.forEach(function (user) {
+                    var settings = getSetting(config, user.Id);
+                    var wrapper = document.createElement('div');
+                    wrapper.className = 'verticalSection';
+                    wrapper.innerHTML = [
+                        '<div class="listItem listItem-border">',
+                        '  <div class="listItemBody">',
+                        '    <div class="listItemBodyText">',
+                        '      <h3 class="listItemBodyText no-wrap">' + user.Name + (user.IsAdministrator ? ' (Admin)' : '') + '</h3>',
+                        '      <div class="fieldDescription">These toggles only affect self-service changes by this user.</div>',
+                        '    </div>',
+                        '    <div class="listItemBodyText" style="margin-top:1em;">',
+                        '      <label class="emby-checkbox-label" style="display:block; margin-bottom: .75em;">',
+                        '        <input class="password-toggle" type="checkbox" is="emby-checkbox" data-user-id="' + user.Id + '"' + (settings.AllowPasswordChange ? ' checked' : '') + ' />',
+                        '        <span>Can change password</span>',
+                        '      </label>',
+                        '      <label class="emby-checkbox-label" style="display:block;">',
+                        '        <input class="profile-image-toggle" type="checkbox" is="emby-checkbox" data-user-id="' + user.Id + '"' + (settings.AllowProfileImageChange ? ' checked' : '') + ' />',
+                        '        <span>Can change profile picture</span>',
+                        '      </label>',
+                        '    </div>',
+                        '  </div>',
+                        '</div>'
+                    ].join('');
+
+                    container.appendChild(wrapper);
+                });
+            }
+
+            function loadPageData() {
+                Dashboard.showLoadingMsg();
+
+                return Promise.all([
+                    ApiClient.getPluginConfiguration(ExtraAuthSettingsConfig.pluginUniqueId),
+                    ApiClient.ajax({
+                        type: 'GET',
+                        url: getUsersUrl(),
+                        dataType: 'json'
+                    })
+                ]).then(function (results) {
+                    var config = results[0];
+                    var users = results[1];
+                    renderUsers(config, users);
+                    Dashboard.hideLoadingMsg();
+                }).catch(function (error) {
+                    Dashboard.hideLoadingMsg();
+                    throw error;
+                });
+            }
+
+            document.querySelector('#ExtraAuthSettingsConfigPage')
+                .addEventListener('pageshow', function () {
+                    loadPageData();
+                });
+
+            document.querySelector('#ExtraAuthSettingsConfigForm')
+                .addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    Dashboard.showLoadingMsg();
+
+                    ApiClient.getPluginConfiguration(ExtraAuthSettingsConfig.pluginUniqueId).then(function (config) {
+                        var passwordToggles = Array.from(document.querySelectorAll('.password-toggle'));
+                        var imageToggleMap = new Map(Array.from(document.querySelectorAll('.profile-image-toggle')).map(function (element) {
+                            return [element.getAttribute('data-user-id'), element];
+                        }));
+
+                        config.UserSettings = passwordToggles.map(function (passwordToggle) {
+                            var userId = passwordToggle.getAttribute('data-user-id');
+                            return {
+                                UserId: userId,
+                                AllowPasswordChange: passwordToggle.checked,
+                                AllowProfileImageChange: imageToggleMap.get(userId).checked
+                            };
+                        });
+
+                        return ApiClient.updatePluginConfiguration(ExtraAuthSettingsConfig.pluginUniqueId, config);
+                    }).then(function (result) {
+                        Dashboard.processPluginConfigurationUpdateResult(result);
+                    });
+
+                    return false;
+                });
+        </script>
+    </div>
+</body>
+</html>

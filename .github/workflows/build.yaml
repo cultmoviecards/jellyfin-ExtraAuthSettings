@@ -1,0 +1,72 @@
+name: Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: 9.0.x
+  PLUGIN_NAME: ExtraAuthSettings
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Read plugin version
+        id: version
+        shell: bash
+        run: |
+          version="$(sed -n 's/^version: \"\(.*\)\"$/\1/p' build.yaml)"
+
+          if [[ -z "$version" ]]; then
+            echo "Unable to read version from build.yaml" >&2
+            exit 1
+          fi
+
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Publish
+        run: >
+          dotnet publish ExtraAuthSettings.sln
+          --configuration Release
+          --output artifacts/publish
+          /p:Version=${{ steps.version.outputs.value }}
+          /p:AssemblyVersion=${{ steps.version.outputs.value }}
+          /p:FileVersion=${{ steps.version.outputs.value }}
+
+      - name: Package build artifact
+        shell: bash
+        run: |
+          mkdir -p artifacts/package/${PLUGIN_NAME}
+          cp artifacts/publish/* artifacts/package/${PLUGIN_NAME}/
+          cp build.yaml artifacts/package/build.yaml
+
+          (
+            cd artifacts/package
+            zip -r "../${PLUGIN_NAME}_${{ steps.version.outputs.value }}.zip" "${PLUGIN_NAME}"
+          )
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PLUGIN_NAME }}_${{ steps.version.outputs.value }}
+          path: |
+            artifacts/publish/**
+            artifacts/${{ env.PLUGIN_NAME }}_${{ steps.version.outputs.value }}.zip
+            build.yaml
