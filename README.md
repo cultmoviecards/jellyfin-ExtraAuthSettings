@@ -9,9 +9,22 @@
 </p>
 
 <p align="center">
-  <img alt="Jellyfin ABI" src="https://img.shields.io/badge/Jellyfin-10.11.0.0-00a4dc?style=for-the-badge" />
-  <img alt=".NET" src="https://img.shields.io/badge/.NET-net9.0-512bd4?style=for-the-badge" />
-  <img alt="Category" src="https://img.shields.io/badge/Category-Administration-101820?style=for-the-badge" />
+<a href="https://dotnet.microsoft.com/en-us/download/dotnet/9.0">
+  <img alt=".NET" src="https://img.shields.io/badge/.NET-net9.0-512bd4" />
+</a>
+<a href="https://github.com/BananaBagel/jellyfin-ExtraAuthSettings/releases">
+<img alt="Current Release" src="https://img.shields.io/github/release/BananaBagel/jellyfin-ExtraAuthSettings.svg"/>
+</a>
+<a href="https://github.com/BananaBagel/jellyfin-ExtraAuthSettings/actions?query=workflow%3A%22Test+Build+Plugin%22">
+<img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/BananaBagel/jellyfin-ExtraAuthSettings/build.yaml">
+</a>
+<br/>
+<a href="https://jellyfin.org/">
+  <img alt="Jellyfin ABI" src="https://img.shields.io/badge/Jellyfin-10.11.6.0-00a4dc" />
+</a>
+<a href="https://jellyfin.org/docs/general/server/plugins/">
+  <img alt="Category" src="https://img.shields.io/badge/Category-Administration-101820" />
+</a>
 </p>
 
 ## Overview
@@ -45,7 +58,7 @@ Then install **Extra Auth Settings** from the plugin catalog in Jellyfin.
 
 ## Compatibility
 
-- Jellyfin `10.11.0.0`
+- Jellyfin `10.11.6.0`
 - .NET `net9.0`
 
 ## Configuration
