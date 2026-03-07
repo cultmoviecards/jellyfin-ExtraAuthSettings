@@ -18,18 +18,6 @@
 
 Extra Auth Settings adds a small set of admin-controlled restrictions for Jellyfin users. It is designed for servers where some accounts should not be able to change their own credentials or profile image without admin involvement.
 
-## Features
-
-- Disable self-service password changes per user
-- Disable self-service profile picture changes per user
-- Leave administrator accounts unaffected
-- Manage settings from a simple plugin configuration page inside the Jellyfin dashboard
-
-## Compatibility
-
-- Jellyfin `10.11.0.0`
-- .NET `net9.0`
-
 ## Installation
 
 ### From a plugin repository
@@ -47,6 +35,18 @@ Then install **Extra Auth Settings** from the plugin catalog in Jellyfin.
 1. Download the latest release zip from this repository.
 2. Extract the contents into a folder named `ExtraAuthSettings` under your Jellyfin plugins directory.
 3. Restart Jellyfin.
+
+## Features
+
+- Disable self-service password changes per user
+- Disable self-service profile picture changes per user
+- Leave administrator accounts unaffected
+- Manage settings from a simple plugin configuration page inside the Jellyfin dashboard
+
+## Compatibility
+
+- Jellyfin `10.11.0.0`
+- .NET `net9.0`
 
 ## Configuration
 
