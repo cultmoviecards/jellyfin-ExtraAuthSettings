@@ -1,0 +1,222 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img"
+    aria-labelledby="title desc">
+    <title id="title">Extra Auth Settings plugin card</title>
+    <desc id="desc">16:9 Card for the Extra Auth Settings Jellyfin plugin</desc>
+
+    <defs>
+        <linearGradient id="bgBase" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7a6cff" />
+            <stop offset="32%" stop-color="#9e62ff" />
+            <stop offset="62%" stop-color="#ff5fd2" />
+            <stop offset="100%" stop-color="#ff9b6b" />
+        </linearGradient>
+
+        <radialGradient id="blobBlue" cx="0.18" cy="0.72" r="0.44">
+            <stop offset="0%" stop-color="#74d8ff" stop-opacity="0.95" />
+            <stop offset="100%" stop-color="#74d8ff" stop-opacity="0" />
+        </radialGradient>
+
+        <radialGradient id="blobPink" cx="0.76" cy="0.34" r="0.40">
+            <stop offset="0%" stop-color="#ff68d4" stop-opacity="0.9" />
+            <stop offset="100%" stop-color="#ff68d4" stop-opacity="0" />
+        </radialGradient>
+
+        <radialGradient id="blobOrange" cx="0.50" cy="0.80" r="0.34">
+            <stop offset="0%" stop-color="#ffbf4f" stop-opacity="0.92" />
+            <stop offset="100%" stop-color="#ffbf4f" stop-opacity="0" />
+        </radialGradient>
+
+        <radialGradient id="blobPurple" cx="0.44" cy="0.10" r="0.40">
+            <stop offset="0%" stop-color="#ad72ff" stop-opacity="0.75" />
+            <stop offset="100%" stop-color="#ad72ff" stop-opacity="0" />
+        </radialGradient>
+
+        <filter id="bgBlur" x="-25%" y="-25%" width="150%" height="150%">
+            <feGaussianBlur stdDeviation="42" />
+        </filter>
+
+        <filter id="textGlow" x="-40%" y="-40%" width="180%" height="180%">
+            <feMorphology in="SourceAlpha" operator="dilate" radius="2" result="spread" />
+            <feGaussianBlur in="spread" stdDeviation="14" result="blur1" />
+            <feFlood flood-color="#ffffff" flood-opacity="0.95" result="f1" />
+            <feComposite in="f1" in2="blur1" operator="in" result="glow1" />
+
+            <feGaussianBlur in="spread" stdDeviation="30" result="blur2" />
+            <feFlood flood-color="#ffd56a" flood-opacity="0.55" result="f2" />
+            <feComposite in="f2" in2="blur2" operator="in" result="glow2" />
+
+            <feMerge>
+                <feMergeNode in="glow2" />
+                <feMergeNode in="glow1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+
+        <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="10" />
+        </filter>
+
+        <g id="sparkle4">
+            <path d="M0 -22 C1 -8 1 -1 0 0 C-1 -1 -1 -8 0 -22Z" fill="#fff" />
+            <path d="M0 22 C1 8 1 1 0 0 C-1 1 -1 8 0 22Z" fill="#fff" />
+            <path d="M-22 0 C-8 1 -1 1 0 0 C-1 -1 -8 -1 -22 0Z" fill="#fff" />
+            <path d="M22 0 C8 1 1 1 0 0 C1 -1 8 -1 22 0Z" fill="#fff" />
+        </g>
+
+        <g id="dash">
+            <ellipse cx="0" cy="0" rx="28" ry="8" fill="#fff" />
+        </g>
+
+        <style>
+            .script {
+            fill: #ffffff;
+            font-family: "Pacifico", "Brush Script MT", "Segoe Script", "Snell Roundhand", cursive;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            }
+        </style>
+    </defs>
+
+    <rect width="1600" height="900" fill="url(#bgBase)" />
+
+    <g filter="url(#bgBlur)">
+        <rect width="1600" height="900" fill="url(#blobPurple)" />
+        <rect width="1600" height="900" fill="url(#blobBlue)" />
+        <rect width="1600" height="900" fill="url(#blobPink)" />
+        <rect width="1600" height="900" fill="url(#blobOrange)" />
+    </g>
+
+    <g opacity="0.25" filter="url(#softGlow)">
+        <circle cx="210" cy="230" r="74" fill="#8af0ff" />
+        <circle cx="1330" cy="250" r="82" fill="#ff79db" />
+        <circle cx="800" cy="690" r="145" fill="#ffc14d" />
+        <circle cx="220" cy="750" r="90" fill="#7fd5ff" />
+        <circle cx="1470" cy="710" r="88" fill="#ff8de3" />
+        <circle cx="960" cy="170" r="78" fill="#bc89ff" />
+    </g>
+
+    <!-- big dashes -->
+    <g opacity="0.9">
+        <g transform="translate(210 220) rotate(-38)">
+            <use href="#dash" />
+        </g>
+        <g transform="translate(1390 220) rotate(-38)">
+            <use href="#dash" />
+        </g>
+        <g transform="translate(160 500) rotate(-10) scale(1.1 1)">
+            <use href="#dash" />
+        </g>
+        <g transform="translate(1440 500) rotate(8) scale(1.1 1)">
+            <use href="#dash" />
+        </g>
+        <g transform="translate(460 790) rotate(-48) scale(1 0.95)">
+            <use href="#dash" />
+        </g>
+        <g transform="translate(800 805) rotate(90) scale(1.15 1)">
+            <use href="#dash" />
+        </g>
+        <g transform="translate(1160 790) rotate(42) scale(1 0.95)">
+            <use href="#dash" />
+        </g>
+    </g>
+
+    <!-- large sparkles -->
+    <g opacity="0.96">
+        <g transform="translate(165 370) scale(1.65)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1430 350) scale(1.5)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1370 760) scale(1.15)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1120 710) scale(0.92)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(340 760) scale(0.82)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1385 250) scale(0.76)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(320 510) scale(0.72)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1240 150) scale(0.66)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(430 205) scale(0.62)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1030 825) scale(0.72)">
+            <use href="#sparkle4" />
+        </g>
+    </g>
+
+    <!-- medium sparkles -->
+    <g opacity="0.95">
+        <g transform="translate(250 165) scale(0.7)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1510 285) scale(0.62)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1490 520) scale(0.58)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1260 590) scale(0.55)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1080 120) scale(0.52)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(1010 255) scale(0.48)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(580 170) scale(0.5)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(210 700) scale(0.52)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(540 825) scale(0.55)">
+            <use href="#sparkle4" />
+        </g>
+        <g transform="translate(880 735) scale(0.45)">
+            <use href="#sparkle4" />
+        </g>
+    </g>
+
+    <!-- tiny stars / dust -->
+    <g fill="#fff" opacity="0.95">
+        <circle cx="980" cy="160" r="2.5" />
+        <circle cx="1030" cy="190" r="2" />
+        <circle cx="1052" cy="230" r="2.3" />
+        <circle cx="465" cy="540" r="2.2" />
+        <circle cx="505" cy="510" r="2" />
+        <circle cx="1090" cy="810" r="2.2" />
+        <circle cx="1170" cy="760" r="1.8" />
+        <circle cx="1210" cy="620" r="2" />
+        <circle cx="1320" cy="115" r="2" />
+        <circle cx="1360" cy="145" r="1.8" />
+        <circle cx="220" cy="310" r="2.1" />
+        <circle cx="270" cy="350" r="1.7" />
+        <circle cx="320" cy="390" r="2" />
+        <circle cx="1450" cy="640" r="2" />
+        <circle cx="1475" cy="688" r="1.8" />
+        <circle cx="860" cy="95" r="1.8" />
+        <circle cx="695" cy="815" r="2.2" />
+        <circle cx="610" cy="770" r="1.7" />
+    </g>
+
+    <g filter="url(#textGlow)">
+        <text class="script" x="800" y="390" text-anchor="middle" font-size="230">
+            Extra Auth
+        </text>
+
+        <text class="script" x="800" y="610" text-anchor="middle" font-size="210">
+            Settings
+        </text>
+    </g>
+</svg>
