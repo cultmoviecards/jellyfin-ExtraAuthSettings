@@ -100,6 +100,11 @@ jobs:
             ${{ steps.package.outputs.archive }}
             ${{ steps.package.outputs.checksum }}
 
+      - name: Load manifest deploy key
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.MANIFEST_DEPLOY_KEY }}
+
       - name: Update manifest branch
         shell: bash
         run: |
@@ -107,6 +112,9 @@ jobs:
           timestamp="$(date -u '+%Y-%m-%d %H:%M:%S')"
           source_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/v${{ steps.version.outputs.value }}/${{ steps.package.outputs.archive_name }}"
 
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git remote set-url origin "git@github.com:${GITHUB_REPOSITORY}.git"
           git fetch origin manifest || true
 
           if git show-ref --verify --quiet refs/remotes/origin/manifest; then
