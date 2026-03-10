@@ -29,7 +29,7 @@
 
 ## Overview
 
-Extra Auth Settings adds a small set of admin-controlled restrictions for Jellyfin users. It is designed for servers where some accounts should not be able to change their own credentials or profile image without admin involvement.
+Extra Auth Settings adds a small set of admin-controlled restrictions for Jellyfin users. It is designed for servers where some accounts should not be able to change their own credentials or profile image without admin involvement. This plugin is originally made for a media server located in a rental house, to stop renters from changing account settings/passwords.
 
 ## Installation
 
